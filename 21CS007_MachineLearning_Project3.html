@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            background-image: url('https://img.freepik.com/free-photo/panoramic-view-dubai-city-illuminated-neon-spectrum_23-2151305340.jpg?w=740');
+            background-size: cover;
+            background-position: center;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: inherit;
+            background-size: cover;
+            background-position: center;
+            filter: blur(2px);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h1 {
+            color: #333333;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            color: white;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .predicted-price {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 20px;
+        }
+
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0%   { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .stock-image {
+            max-width: 50%;
+            display: block;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Predictor</h1>
+        <input type="file" accept=".csv" id="csvInput">
+        <img class="stock-image" id="stockImage" src="https://img.freepik.com/premium-vector/stock-market-graph-forex-trading-chart-business_87788-126.jpg?w=740" alt="Stock Image">
+        <div class="marquee">
+            <span>Latest News: Stock market surges to new highs!</span>
+        </div>
+        <table id="stockData">
+            <thead>
+                <tr>
+                    <th>Days</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here dynamically -->
+            </tbody>
+        </table>
+        <p>Predicted price for day 6: <span class="predicted-price" id="predictedPrice"></span></p>
+    </div>
+    <script>
+        function calculateSlope(data) {
+            let sumX = 0;
+            let sumY = 0;
+            let sumXY = 0;
+            let sumX2 = 0;
+
+            for (const point of data) {
+                sumX += point.days;
+                sumY += point.price;
+                sumXY += point.days * point.price;
+                sumX2 += point.days * point.days;
+            }
+
+            const slope = (sumXY - sumX * sumY / data.length) / (sumX2 - sumX * sumX / data.length);
+            return slope;
+        }
+
+        function calculateIntercept(data, slope) {
+            const averageX = data.reduce((acc, point) => acc + point.days, 0) / data.length;
+            const averageY = data.reduce((acc, point) => acc + point.price, 0) / data.length;
+            const intercept = averageY - slope * averageX;
+            return intercept;
+        }
+
+        function predictPrice(days, slope, intercept) {
+            return slope * days + intercept;
+        }
+
+        function renderData(data) {
+            const tableBody = document.querySelector('#stockData tbody');
+            tableBody.innerHTML = '';
+            data.forEach(point => {
+                tableBody.innerHTML += <tr><td>${point.days}</td><td>${point.price}</td></tr>;
+            });
+        }
+
+        document.getElementById('csvInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const csv = event.target.result;
+                const data = [];
+                const rows = csv.split('\n');
+                rows.forEach(row => {
+                    const [days, price] = row.split(',');
+                    data.push({ days: parseInt(days), price: parseInt(price) });
+                });
+                renderData(data);
+                const slope = calculateSlope(data);
+                const intercept = calculateIntercept(data, slope);
+                const predictedPrice = predictPrice(6, slope, intercept);
+            };
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>

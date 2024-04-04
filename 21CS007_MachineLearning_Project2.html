@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sentiment Analyzer</title>
+</head>
+<body>
+ <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            color:#d8n4s8;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://img.freepik.com/free-photo/digital-art-with-person-looking-city-landscape_23-2151065723.jpg?w=740');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
+  <center><h1>Sentiment Analyzer</h1>
+  <input type="text" id="inputText" placeholder="Enter text to analyze">
+  <button onclick="analyzeText()">Analyze</button>
+  <p id="sentimentOutput"></p></center>
+  <script>
+    const positiveWords = ["love","happy","joy","cheerful","rainbow"];
+    const negativeWords = ["sad", "angry", "hate", "bad"];
+
+    function analyzeSentiment(text) {
+      const wordCounts = {};
+      text.split(/\s+/).forEach(word => (wordCounts[word.toLowerCase()] =
+        (wordCounts[word.toLowerCase()] || 0) + 1));
+      let sentiment = "neutral";
+      let positiveCount = 0;
+      let negativeCount = 0;
+      for (const word in wordCounts) {
+        if (positiveWords.includes(word)) {
+          positiveCount += wordCounts[word];
+        } else if (negativeWords.includes(word)) {
+          negativeCount += wordCounts[word];
+        }
+      }
+      if (positiveCount > negativeCount) {
+        sentiment = "positive 😇";
+      } else if (negativeCount > positiveCount) {
+        sentiment = "negative 😟";
+      }
+      return sentiment;
+    }
+
+    function analyzeText() {
+      const text = document.getElementById("inputText").value;
+      const sentiment = analyzeSentiment(text);
+      document.getElementById("sentimentOutput").textContent = "Sentiment: " + sentiment;
+    }
+  </script>
+</body>
+</html>

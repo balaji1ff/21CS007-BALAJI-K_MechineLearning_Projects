@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anime Recommender</title>
+    <style>
+        body {
+    background-image: url('https://img.freepik.com/free-photo/nature-mystery-portrayed-tranquil-forest-scene-generative-ai_188544-9755.jpg?w=826&t=st=1712220341~exp=1712220941~hmac=0350cb0e40cd19a35a044631322fd722327a2645d528f018bf766b8cecbe8b8a');
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+    </style>
+    <script>
+        const movies = [
+            { title: "Spy x Family", ratings: [5, 5, 4, 5] },
+            { title: "Darling In The Franxx", ratings: [5, 5, 5, 5] },
+            { title: "My Hero Academy", ratings: [4, 5, 4, 5] },
+            { title: "Vinland Saga", ratings: [5, 5, 5, 4] },
+        ];
+       
+        function recommendMovies(userRatings) {
+            const recommendations = [];
+            for (const movie of movies) {
+                let similarityScore = 0;
+                for (let i = 0; i < userRatings.length; i++) {
+                    similarityScore += userRatings[i] * movie.ratings[i];
+                }
+                recommendations.push({ title: movie.title, score: similarityScore });
+            }
+            recommendations.sort((a, b) => b.score - a.score);
+            return recommendations.slice(0, 3);
+        }
+       
+        const userRatings = [5, 5, 4];
+        const recommendations = recommendMovies(userRatings);
+        console.log("Recommended Anime Movies For You:");
+        for (const recommendation of recommendations) {
+            console.log(recommendation.title);
+        }
+    </script>
+</head>
+<body>
+    <h1>Anime Recommender...🌸🌸🌸</h1> <!-- Title added -->
+</body>
+</html>
